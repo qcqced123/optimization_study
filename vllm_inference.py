@@ -1,8 +1,14 @@
 """ Initialize vLLM’s engine for offline inference with the LLM class
 LLM class is the child of Huggingface AutoModel, so we can init this class same as Huggingface AutoModel usage
 """
+import pandas as pd
+
 from typing import List
 from vllm import LLM, SamplingParams
+
+
+def get_inputs(df: pd.DataFrame) -> List[str]:
+    return df["doc"].tolist()
 
 
 def initialize_llm(model_name: str, max_length: int, q_method: str) -> LLM:
@@ -22,12 +28,9 @@ def do_inference(llm: LLM, inputs: List[str], sampling_params: SamplingParams):
 
 
 if __name__ == '__main__':
-    prompts = [
-        "Hello, my name is",
-        "The president of the United States is",
-        "The capital of France is",
-        "The future of AI is",
-    ]
+    prompts = get_inputs(
+        pd.read_csv("./optimization/dataset/2112.07076.csv")
+    )
 
     model_name = "./awq/phi3"
     quantization_method = "AWQ"
