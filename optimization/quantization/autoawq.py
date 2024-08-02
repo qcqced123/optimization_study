@@ -1,3 +1,13 @@
+""" AWQ: Activation Aware Quantization Tutorial
+This tutorial have the objective for using AWQ Quantized model to LoRA fine-tune pipeline
+
+workflow:
+    1) load the pretrained model
+    2) apply the Quantization with AWQ
+    3) save the applied AWQ model
+    4) re-load the AWQ Model with transformers.AutoModel
+    5) add the AWQ AutoModel to LoRA adapter
+"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -10,18 +20,6 @@ from awq import AutoAWQForCausalLM
 from awq.models.base import BaseAWQForCausalLM
 from transformers import AwqConfig, BitsAndBytesConfig
 from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
-
-
-""" AWQ: Activation Aware Quantization Tutorial
-This tutorial have the objective for using AWQ Quantized model to LoRA fine-tune pipeline
-
-workflow:
-    1) load the pretrained model
-    2) apply the Quantization with AWQ
-    3) save the applied AWQ model
-    4) re-load the AWQ Model with transformers.AutoModel
-    5) add the AWQ AutoModel to LoRA adapter
-"""
 
 
 def get_device():
