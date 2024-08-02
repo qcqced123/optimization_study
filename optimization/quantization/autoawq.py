@@ -7,6 +7,7 @@ from peft import LoraConfig, PeftModel
 from peft import get_peft_config, get_peft_model
 
 from awq import AutoAWQForCausalLM
+from awq.models.base import BaseAWQForCausalLM
 from transformers import AwqConfig, BitsAndBytesConfig
 from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
 
@@ -34,7 +35,7 @@ def get_tokenizer(model_name: str) -> AutoTokenizer:
     )
 
 
-def get_awq_model(model_name: str) -> AutoAWQForCausalLM:
+def get_awq_model(model_name: str) -> BaseAWQForCausalLM:
     return AutoAWQForCausalLM.from_pretrained(
         model_name,
         trust_remote_code=True,
@@ -78,7 +79,7 @@ def save_awq_module(model: nn.Module, tokenizer: AutoTokenizer, path: str) -> No
 
 if __name__ == '__main__':
     device = get_device()
-    model_name = "microsoft/Phi3-mini-128k-instruct"
+    model_name = "microsoft/Phi-3-mini-128k-instruct"
 
     tokenizer = get_tokenizer(model_name=model_name)
     model = get_awq_model(model_name)
