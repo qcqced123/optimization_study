@@ -6,7 +6,7 @@ from typing import Dict
 from peft import LoraConfig, PeftModel
 from peft import get_peft_config, get_peft_model
 
-from autoawq import AutoAWQForCausalLM
+from awq import AutoAWQForCausalLM
 from transformers import AwqConfig, BitsAndBytesConfig
 from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
 
@@ -36,7 +36,9 @@ def get_tokenizer(model_name: str) -> AutoTokenizer:
 
 def get_awq_model(model_name: str) -> AutoAWQForCausalLM:
     return AutoAWQForCausalLM.from_pretrained(
-        model_name
+        model_name,
+        trust_remote_code=True,
+        attn_implementation="flash_attention_2"
     )
 
 
