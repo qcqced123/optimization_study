@@ -5,10 +5,12 @@ from typing import List
 from vllm import LLM, SamplingParams
 
 
-def initialize_llm(model_name: str, q_method: str) -> LLm:
+def initialize_llm(model_name: str, max_length: int, q_method: str) -> LLM:
     return LLM(
         model=model_name,
-        quantization="AWQ"
+        max_model_len=max_length,
+        quantization=q_method,
+        trust_remote_code=True,
     )
 
 
@@ -32,13 +34,14 @@ if __name__ == '__main__':
 
     llm_model = initialize_llm(
         model_name=model_name,
+        max_length=21153,
         q_method=quantization_method
     )
 
     sampling_params = SamplingParams(
-        temperature=0.8,
-        top_k=50,
-        top_p=0.95
+        temperature=1,
+        # top_k=50,
+        # top_p=0.90
     )
     outputs = do_inference(
         llm=llm_model,

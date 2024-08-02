@@ -12,6 +12,7 @@
 .DS_Store
 *.xml
 *.iml
+/awq/
 !/experiment/models/attention/seq2seq/(NoteTaking_Ver)Transformer.ipynb
 !/experiment/models/attention/encoder_model/implementation_test.ipynb
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,windows,python,pycharm,jupyternotebooks,visualstudiocode

@@ -97,6 +97,6 @@ if __name__ == '__main__':
     save_awq_module(
         model=model,
         tokenizer=tokenizer,
-        path="./awq/phi3"
+        path="../awq/phi3"
     )
 
