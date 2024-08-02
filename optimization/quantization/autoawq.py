@@ -6,7 +6,7 @@ from typing import Dict
 from peft import LoraConfig, PeftModel
 from peft import get_peft_config, get_peft_model
 
-from awq import AutoAWQForCausalLM
+from autoawq import AutoAWQForCausalLM
 from transformers import AwqConfig, BitsAndBytesConfig
 from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
 
