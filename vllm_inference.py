@@ -129,10 +129,12 @@ if __name__ == '__main__':
 
     sampling_params = SamplingParams(
         seed=42,
-        max_tokens=96,
+        max_tokens=64,
         temperature=0.0000000001,
         top_k=50,
-        top_p=0.90
+        top_p=0.90,
+        repetition_penalty=0.6,
+        skip_special_tokens=True
     )
     outputs = do_inference(
         llm=llm_model,
