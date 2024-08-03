@@ -46,6 +46,7 @@ Section 2 reveals two key findings empirically:
 Effective positional interpolation should consider two forms of non-uniformities: varying RoPE dimensions and token positions. Lower RoPE dimensions and initial starting token positions benefit from less interpolation, but the optimal solutions depend on the target extended length.
 By considering these non-uniformities into positional interpolation, we can effectively retain information in the original RoPE, particularly key dimensions and token positions. This minimizes the loss caused by positional interpolation, and thus provides better initialization for fine-tuning. Moreover, it allows an 8× extension in non-fine-tuning scenarios.
 Question 1: What is positional interpolation in the context of LLMs, and why is it important? How do varying RoPE dimensions and token positions affect the need for interpolation?
+
 Context 2:
 We observe that the weights of LLMs are not equally important: there is a small fraction of salient weights that are much more important for LLMs’ performance compared to others.
 Skipping the quantization of these salient weights can help bridge the performance degradation due to the quantization loss without any training or regression.
@@ -62,7 +63,6 @@ During the attention computation, the PagedAttention kernel identifies and fetch
 Question 3: What is PagedAttention, and how does it differ from traditional attention algorithms? How does the idea of virtual memory and paging in operating systems inspire PagedAttention? How does PagedAttention partition the KV cache of each sequence?
 
 Your Task: For the given text from Context 4, generate questions based on the specific guidelines provided.
-Generate appropriate questions according to the given context from Context 4 only.
 Keep the number of questions between 1 and 3.
 Create only the question text.
 Separate the questions you want to create with newlines.
