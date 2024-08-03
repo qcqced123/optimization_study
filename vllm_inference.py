@@ -129,8 +129,8 @@ if __name__ == '__main__':
 
     sampling_params = SamplingParams(
         seed=42,
-        max_tokens=64,
-        temperature=0.1,
+        max_tokens=96,
+        temperature=0.0000000001,
         top_k=50,
         top_p=0.90
     )
