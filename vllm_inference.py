@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
     prompts = get_inputs(
         tokenizer=tokenizer,
-        df=pd.read_csv("./optimization/dataset/2112.07076.csv")
+        df=pd.read_csv("./optimization/dataset/test.csv")
     )
 
     llm_model = initialize_llm(
