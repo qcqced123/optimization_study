@@ -8,15 +8,17 @@ from vllm import LLM, SamplingParams
 
 
 def get_inputs(df: pd.DataFrame) -> List[str]:
-    return df["doc"].tolist()
+    return [str(doc) for doc in df["doc"].tolist() if doc is not None]
 
 
 def initialize_llm(model_name: str, max_length: int, q_method: str) -> LLM:
     return LLM(
         model=model_name,
         max_model_len=max_length,
+        max_seq_len_to_capture=4096,
         quantization=q_method,
         trust_remote_code=True,
+        swap_space=2
     )
 
 
@@ -42,9 +44,11 @@ if __name__ == '__main__':
     )
 
     sampling_params = SamplingParams(
-        temperature=1,
-        # top_k=50,
-        # top_p=0.90
+        seed=42,
+        max_tokens=32,
+        temperature=0.5,
+        top_k=50,
+        top_p=0.90
     )
     outputs = do_inference(
         llm=llm_model,

@@ -77,7 +77,7 @@ def save_awq_module(model: nn.Module, tokenizer: AutoTokenizer, path: str) -> No
 
 if __name__ == '__main__':
     device = get_device()
-    model_name = "microsoft/Phi-3-mini-128k-instruct"
+    model_name = "google/gemma-2b"
 
     tokenizer = get_tokenizer(model_name=model_name)
     model = get_awq_model(model_name)
@@ -97,6 +97,6 @@ if __name__ == '__main__':
     save_awq_module(
         model=model,
         tokenizer=tokenizer,
-        path="../awq/phi3"
+        path="../awq/gemma_2b"
     )
 
