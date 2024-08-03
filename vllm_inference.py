@@ -131,4 +131,7 @@ if __name__ == '__main__':
     for output in outputs:
         prompt = output.prompt
         generated_text = output.outputs[0].text
-        print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
+        print(f"Prompt: {prompt!r}", end="\n\n")
+        print(f"Generated text: {generated_text!r}", end="\n\n")
+
+
