@@ -5,14 +5,24 @@ import pandas as pd
 
 from typing import List
 from vllm import LLM, SamplingParams
+from transformers import AutoTokenizer
+from optimization.prompt.prompt_maker import cut_context, get_prompt_for_question_generation
 
 
 def get_inputs(df: pd.DataFrame) -> List[str]:
-    return [str(doc) for doc in df["doc"].tolist() if doc is not None]
+    return [
+        get_prompt_for_question_generation(cut_context(str(doc))) for doc in df["doc"].tolist() if doc is not None
+    ]
 
 
 def initialize_llm(model_name: str, max_length: int, max_seq_len_to_capture: int, q_method: str) -> LLM:
     """ wrapper function for initializing the vLLM LLM Engine class
+
+    Args:
+        model_name (str): model name from huggingface model hub or local model path
+        max_length (int): model's max context length, you must pass the default value of model
+        max_seq_len_to_capture (int): maximum value of input sequence (<= max_length)
+        q_method (str): quantization method of model, passing this function
 
     LLM Module's Param:
         model: The name or path of a HuggingFace Transformers model.
@@ -107,6 +117,7 @@ if __name__ == '__main__':
 
     model_name = "./awq/phi3"
     quantization_method = "AWQ"
+    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 
     llm_model = initialize_llm(
         model_name=model_name,
