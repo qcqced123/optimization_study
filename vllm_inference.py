@@ -11,7 +11,7 @@ def get_inputs(df: pd.DataFrame) -> List[str]:
     return [str(doc) for doc in df["doc"].tolist() if doc is not None]
 
 
-def initialize_llm(model_name: str, max_length: int, q_method: str) -> LLM:
+def initialize_llm(model_name: str, max_length: int, max_seq_len_to_capture: int, q_method: str) -> LLM:
     """ wrapper function for initializing the vLLM LLM Engine class
 
     LLM Module's Param:
@@ -72,16 +72,9 @@ def initialize_llm(model_name: str, max_length: int, q_method: str) -> LLM:
             disable CUDA graph and always execute the model in eager mode.
             If False, we will use CUDA graph and eager execution in hybrid.
 
-
-        max_context_len_to_capture: Maximum context len covered by CUDA graphs.
-            When a sequence has context length larger than this, we fall back
-            to eager mode (DEPRECATED. Use `max_seq_len_to_capture` instead).
-
         max_seq_len_to_capture: Maximum sequence len covered by CUDA graphs.
             When a sequence has context length larger than this, we fall back
             to eager mode.
-
-        disable_custom_all_reduce: See ParallelConfig
 
     Reference:
         https://tech.scatterlab.co.kr/vllm-implementation-details/
@@ -93,7 +86,7 @@ def initialize_llm(model_name: str, max_length: int, q_method: str) -> LLM:
         tensor_parallel_size=1,
         gpu_memory_utilization=0.8,
         max_model_len=max_length,
-        max_seq_len_to_capture=4096,
+        max_seq_len_to_capture=max_seq_len_to_capture,
         quantization=q_method,
         trust_remote_code=True,
         swap_space=0
@@ -118,6 +111,7 @@ if __name__ == '__main__':
     llm_model = initialize_llm(
         model_name=model_name,
         max_length=21153,
+        max_seq_len_to_capture=8192,
         q_method=quantization_method
     )
 
