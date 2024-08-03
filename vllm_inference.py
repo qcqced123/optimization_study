@@ -9,9 +9,9 @@ from transformers import AutoTokenizer
 from optimization.prompt.prompt_maker import cut_context, get_prompt_for_question_generation
 
 
-def get_inputs(df: pd.DataFrame) -> List[str]:
+def get_inputs(tokenizer: AutoTokenizer, df: pd.DataFrame) -> List[str]:
     return [
-        get_prompt_for_question_generation(cut_context(str(doc))) for doc in df["doc"].tolist() if doc is not None
+        get_prompt_for_question_generation(cut_context(tokenizer, str(doc))) for doc in df["doc"].tolist() if doc is not None
     ]
 
 
@@ -111,13 +111,14 @@ def do_inference(llm: LLM, inputs: List[str], sampling_params: SamplingParams):
 
 
 if __name__ == '__main__':
-    prompts = get_inputs(
-        pd.read_csv("./optimization/dataset/2112.07076.csv")
-    )
-
     model_name = "./awq/phi3"
     quantization_method = "AWQ"
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+
+    prompts = get_inputs(
+        tokenizer=tokenizer,
+        df=pd.read_csv("./optimization/dataset/2112.07076.csv")
+    )
 
     llm_model = initialize_llm(
         model_name=model_name,
