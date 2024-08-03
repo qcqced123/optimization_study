@@ -132,8 +132,8 @@ if __name__ == '__main__':
         max_tokens=64,
         temperature=0.0000000000000001,
         top_k=50,
-        top_p=0.90,
-        repetition_penalty=0.6,
+        top_p=0.95,
+        # repetition_penalty=0.6,
         skip_special_tokens=True
     )
     outputs = do_inference(
