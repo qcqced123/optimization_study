@@ -64,7 +64,7 @@ Question 3: What is PagedAttention, and how does it differ from traditional atte
 Your Task: For the given text from Context 4, generate questions based on the specific guidelines provided.
 Generate appropriate questions according to the given context from Context 4 only.
 Keep the number of questions between 1 and 3.
-ㄴCreate only the question text.
+Create only the question text.
 Separate the questions you want to create with newlines.
 
 Context 4: {context}
