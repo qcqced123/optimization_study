@@ -38,6 +38,9 @@ def init_normalizer(mode: str = "cased", language: str = "en") -> Normalizer:
 def apply_normalizer(normalizer: Normalizer, text: str) -> str:
     """ wrapper function for Text Normalizer from NVIDIA NeMo
 
+    normalizer will do normalize tokens from written to spoken form
+    e.g. 12 kg -> twelve kilograms
+
     normalize function's param explain:
         text: string that may include semiotic classes
         punct_pre_process: whether to perform punctuation pre-processing, for example, [25] -> [ 25 ]

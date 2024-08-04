@@ -76,17 +76,15 @@ What is PagedAttention, and how does it differ from traditional attention algori
 How does the idea of virtual memory and paging in operating systems inspire PagedAttention?
 How does PagedAttention partition the KV cache of each sequence?
 
+Context 4:
+{context}
+Question 4:
+
 Your Task:
 For the given text from Context 4, generate questions based on the specific guidelines provided.
 Keep the number of questions between 1 and 3.
 Do not use bullet points or numerical indicators (e.g., "-", "1.", "2.", "Question", "Context") to start your questions.
 Separate the questions you want to create with newlines.
-Always end individual questions with a question mark.
-
-Context 4:
-{context}
-
-Question 4:
-
-"""
+Always end individual questions with a question mark."""
+    
     return prompt
