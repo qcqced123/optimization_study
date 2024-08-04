@@ -82,8 +82,9 @@ Keep the number of questions between 1 and 3.
 Separate the questions you want to create with newlines.
 Do not use bullet points or numerical indicators (e.g., "-", "1.", "2.", "Question", "Context") to start your questions.
 
-Context 4: {context}
-Question 4:
+Context 4:
+{context}
 
+Question 4:
 """
     return prompt
