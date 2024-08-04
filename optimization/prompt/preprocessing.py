@@ -21,7 +21,14 @@ def normalize_symbol(text: str) -> str:
 
 
 def init_normalizer(mode: str = "cased", language: str = "en") -> Normalizer:
-    """ function for initializing the Text Normalizer from NVIDIA NeMo """
+    """ function for initializing the Text Normalizer from NVIDIA NeMo
+    Args:
+        mode (str): options for "lower_cased", "cased"
+        language (str): default setting is english "en"
+
+    Reference:
+        https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/nlp/text_normalization/wfst/wfst_text_normalization.html#text-normalization
+    """
     return Normalizer(
         input_case=mode,
         lang=language
@@ -36,6 +43,10 @@ def apply_normalizer(normalizer: Normalizer, text: str) -> str:
         punct_pre_process: whether to perform punctuation pre-processing, for example, [25] -> [ 25 ]
         punct_post_process: whether to normalize punctuation
         verbose: whether to print intermediate meta information
+
+    Reference:
+        https://github.com/NVIDIA/NeMo-text-processing/blob/main/nemo_text_processing/text_normalization/normalize.py
+        https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/nlp/text_normalization/wfst/wfst_text_normalization.html#text-normalization
     """
     return normalizer.normalize(
         text,

@@ -121,7 +121,7 @@ if __name__ == '__main__':
         trust_remote_code=True
     )
     normalizer = init_normalizer(
-        mode="cased",
+        mode="lower_cased",
         language="en"
     )
     document_list = [apply_normalizer(normalizer, document) for document in df["doc"].tolist()]
