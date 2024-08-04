@@ -125,6 +125,9 @@ if __name__ == '__main__':
         language="en"
     )
     document_list = [apply_normalizer(normalizer, document) for document in df["doc"].tolist()]
+    print(document_list[0], end = "\n\n")
+    print(document_list[1], end = "\n\n")
+
     prompts = get_inputs(
         tokenizer=tokenizer,
         text_list=document_list
