@@ -2,8 +2,12 @@
 """
 
 
+def is_valid_question(text: str) -> bool:
+    return text.endswith("?") and not text.startswith("Question") and not text.startswith("Context")
+
+
 def slice_full_questions(output: str) -> str:
-    return " ".join([sub for sub in output.split("\n") if sub.endswith("?")])
+    return " ".join([sub for sub in output.split("\n") if is_valid_question(sub)])
 
 
 if __name__ == '__main__':
