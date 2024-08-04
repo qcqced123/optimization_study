@@ -62,11 +62,13 @@ Specifically, PagedAttention partitions the KV cache of each sequence into block
 During the attention computation, the PagedAttention kernel identifies and fetches these blocks efficiently.
 Question 3: What is PagedAttention, and how does it differ from traditional attention algorithms? How does the idea of virtual memory and paging in operating systems inspire PagedAttention? How does PagedAttention partition the KV cache of each sequence?
 
-Your Task: For the given text from Context 4, generate questions based on the specific guidelines provided.
-Keep the number of questions between 1 and 3.
-Create only the question text.
-Separate the questions you want to create with newlines.
+Your Task:
+For the given text from Context 4, generate questions based on the specific guidelines provided. Keep the number of questions between 1 and 3. Create only the question text. Separate the questions you want to create with newlines. Do not use bullet points or numerical indicators (e.g., "-", "1.", "2.") to start your questions.
 
-Context 4: {context}
-Question 4: """
+Context 4:
+{context}
+
+Question 4:
+
+"""
     return prompt
