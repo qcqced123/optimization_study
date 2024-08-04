@@ -79,8 +79,9 @@ How does PagedAttention partition the KV cache of each sequence?
 Your Task:
 For the given text from Context 4, generate questions based on the specific guidelines provided.
 Keep the number of questions between 1 and 3.
-Separate the questions you want to create with newlines.
 Do not use bullet points or numerical indicators (e.g., "-", "1.", "2.", "Question", "Context") to start your questions.
+Separate the questions you want to create with newlines.
+Always end individual questions with a question mark.
 
 Context 4:
 {context}
