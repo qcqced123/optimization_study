@@ -116,7 +116,7 @@ def do_inference(llm: LLM, inputs: List[str], sampling_params: SamplingParams):
 if __name__ == '__main__':
     model_name = "./awq/phi3"
     quantization_method = "AWQ"
-    df = pd.read_csv("./optimization/dataset/test.csv")
+    df = pd.read_csv("./optimization/dataset/final_arxiv_test.csv")
 
     tokenizer = AutoTokenizer.from_pretrained(
         model_name,
@@ -156,8 +156,5 @@ if __name__ == '__main__':
         inputs=prompts,
         sampling_params=sampling_params
     )
-    for output in outputs:
-        prompt = output.prompt
-        generated_text = slice_full_questions(output.outputs[0].text)
-        # print(f"Prompt: {prompt!r}", end="\n\n")
-        print(f"Generated text: {generated_text!r}", end="\n\n")
+    df["question"] = [slice_full_questions(output.outputs[0].text) for output in outputs]
+    df.to_csv("./optimization/dataset/output_arxiv_test.csv", index=False)
