@@ -6,12 +6,13 @@ import pandas as pd
 from typing import List
 from vllm import LLM, SamplingParams
 from transformers import AutoTokenizer
+from optimization.prompt.preprocessing import init_normalizer, apply_normalizer
 from optimization.prompt.prompt_maker import cut_context, get_prompt_for_question_generation
 
 
-def get_inputs(tokenizer: AutoTokenizer, df: pd.DataFrame) -> List[str]:
+def get_inputs(tokenizer: AutoTokenizer, text_list: List[str]) -> List[str]:
     return [
-        get_prompt_for_question_generation(cut_context(tokenizer, str(doc))) for doc in df["doc"].tolist() if doc is not None
+        get_prompt_for_question_generation(cut_context(tokenizer, str(doc))) for doc in text_list if doc is not None
     ]
 
 
@@ -113,20 +114,27 @@ def do_inference(llm: LLM, inputs: List[str], sampling_params: SamplingParams):
 if __name__ == '__main__':
     model_name = "./awq/phi3"
     quantization_method = "AWQ"
-    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+    df = pd.read_csv("./optimization/dataset/test.csv")
 
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name,
+        trust_remote_code=True
+    )
+    normalizer = init_normalizer(
+        mode="cased",
+        language="en"
+    )
+    document_list = [apply_normalizer(normalizer, document) for document in df["doc"].tolist()]
     prompts = get_inputs(
         tokenizer=tokenizer,
-        df=pd.read_csv("./optimization/dataset/test.csv")
+        text_list=document_list
     )
-
     llm_model = initialize_llm(
         model_name=model_name,
         max_length=21153,
         max_seq_len_to_capture=8192,
         q_method=quantization_method
     )
-
     sampling_params = SamplingParams(
         seed=42,
         max_tokens=64,
@@ -143,7 +151,6 @@ if __name__ == '__main__':
         inputs=prompts,
         sampling_params=sampling_params
     )
-
     for output in outputs:
         prompt = output.prompt
         generated_text = output.outputs[0].text

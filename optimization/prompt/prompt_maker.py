@@ -43,9 +43,9 @@ Your goal is to generate questions based on given contexts.
 Refer to the examples below for guidance.
 
 Context 1:
-Effective positional interpolation should consider two forms of non-uniformities: varying RoPE dimensions and token positions.
+Effective positional interpolation should consider two forms of non-uniformity: varying RoPE dimensions and token positions.
 Lower RoPE dimensions and initial starting token positions benefit from less interpolation, but the optimal solutions depend on the target extended length.
-By considering these non-uniformities into positional interpolation, we can effectively retain information in the original RoPE, particularly key dimensions and token positions.
+By considering these non-uniformity into positional interpolation, we can effectively retain information in the original RoPE, particularly key dimensions and token positions.
 This minimizes the loss caused by positional interpolation, and thus provides better initialization for fine-tuning.
 Moreover, it allows an 8× extension in non-fine-tuning scenarios.
 
@@ -87,5 +87,6 @@ Context 4:
 {context}
 
 Question 4:
+
 """
     return prompt
