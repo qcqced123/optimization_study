@@ -6,6 +6,8 @@ import pandas as pd
 from typing import List
 from vllm import LLM, SamplingParams
 from transformers import AutoTokenizer
+
+from optimization.prompt.postprocessing import slice_full_questions
 from optimization.prompt.preprocessing import init_normalizer, apply_normalizer
 from optimization.prompt.prompt_maker import cut_context, get_prompt_for_question_generation
 
@@ -154,8 +156,6 @@ if __name__ == '__main__':
     )
     for output in outputs:
         prompt = output.prompt
-        generated_text = output.outputs[0].text
-        print(f"Prompt: {prompt!r}", end="\n\n")
+        generated_text = slice_full_questions(output.outputs[0].text)
+        # print(f"Prompt: {prompt!r}", end="\n\n")
         print(f"Generated text: {generated_text!r}", end="\n\n")
-
-
