@@ -8,13 +8,13 @@ from vllm import LLM, SamplingParams
 from transformers import AutoTokenizer
 
 from optimization.prompt.postprocessing import slice_full_questions
-from optimization.prompt.preprocessing import init_normalizer, apply_normalizer
 from optimization.prompt.prompt_maker import cut_context, get_prompt_for_question_generation
+from optimization.prompt.preprocessing import init_normalizer, apply_normalizer, apply_template
 
 
 def get_inputs(tokenizer: AutoTokenizer, text_list: List[str]) -> List[str]:
     return [
-        get_prompt_for_question_generation(cut_context(tokenizer, str(doc))) for doc in text_list if doc is not None
+        apply_template(tokenizer, get_prompt_for_question_generation(cut_context(tokenizer, str(doc)))) for doc in text_list if doc is not None
     ]
 
 

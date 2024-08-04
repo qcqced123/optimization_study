@@ -1,6 +1,8 @@
 import re
 import emoji
 import nemo_text_processing
+
+from transformers import AutoTokenizer
 from nemo_text_processing.text_normalization.normalize import Normalizer
 
 
@@ -55,4 +57,19 @@ def apply_normalizer(normalizer: Normalizer, text: str) -> str:
         text,
         verbose=False,
         punct_post_process=False
+    )
+
+
+def apply_template(tokenizer: AutoTokenizer, prompt: str) -> str:
+    """ wrapper function for AutoTokenizer.apply_chat_template() """
+    message = [
+        {
+            "role": "user",
+            "content": f"{prompt}"
+        }
+    ]
+    return tokenizer.apply_chat_template(
+        message,
+        tokenize=False,
+        add_generation_prompt=True
     )
