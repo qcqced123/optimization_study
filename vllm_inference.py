@@ -131,7 +131,6 @@ if __name__ == '__main__':
         tokenizer=tokenizer,
         text_list=document_list
     )
-    print(f"{prompts[0]}")
 
     llm_model = initialize_llm(
         model_name=model_name,
