@@ -4,6 +4,7 @@ LLM class is the child of Huggingface AutoModel, so we can init this class same 
 import pandas as pd
 
 from typing import List
+from tqdm.auto import tqdm
 from vllm import LLM, SamplingParams
 from transformers import AutoTokenizer
 
@@ -126,7 +127,7 @@ if __name__ == '__main__':
         mode="lower_cased",
         language="en"
     )
-    document_list = [apply_normalizer(normalizer, document) for document in df["doc"].tolist()]
+    document_list = [apply_normalizer(normalizer, document) for document in tqdm(df["doc"].tolist())]
     prompts = get_inputs(
         tokenizer=tokenizer,
         text_list=document_list
