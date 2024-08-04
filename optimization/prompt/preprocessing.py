@@ -53,7 +53,7 @@ def apply_normalizer(normalizer: Normalizer, text: str) -> str:
         https://github.com/NVIDIA/NeMo-text-processing/blob/main/nemo_text_processing/text_normalization/normalize.py
         https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/nlp/text_normalization/wfst/wfst_text_normalization.html#text-normalization
     """
-    if isinstance(text, str):
+    if not isinstance(text, str):
         text = str(text)
 
     return normalizer.normalize(
