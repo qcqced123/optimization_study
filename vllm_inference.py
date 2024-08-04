@@ -5,6 +5,7 @@ import pandas as pd
 
 from typing import List
 from tqdm.auto import tqdm
+from multiprocessing import pool
 from vllm import LLM, SamplingParams
 from transformers import AutoTokenizer
 
