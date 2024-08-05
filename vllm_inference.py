@@ -154,10 +154,18 @@ if __name__ == '__main__':
         stop="\n\n",
         skip_special_tokens=True
     )
-    outputs = do_inference(
-        llm=llm_model,
-        inputs=prompts,
-        sampling_params=sampling_params
-    )
-    df["question"] = [slice_full_questions(output.outputs[0].text) for output in outputs]
+
+    size = len(prompts) // 10
+    chunked = [prompts[i:i + size] for i in range(0, len(prompts), size)]
+
+    questions = []
+    for sub in tqdm(chunked):
+        outputs = do_inference(
+            llm=llm_model,
+            inputs=sub,
+            sampling_params=sampling_params
+        )
+        questions.extend([slice_full_questions(output.outputs[0].text) for output in outputs])
+
+    df["question"] = questions
     df.to_csv("./optimization/dataset/output_arxiv_test.csv", index=False)
