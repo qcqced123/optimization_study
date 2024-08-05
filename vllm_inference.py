@@ -116,6 +116,7 @@ def do_inference(llm: LLM, inputs: List[str], sampling_params: SamplingParams):
 
 
 if __name__ == '__main__':
+    flow = "continue"
     model_name = "./awq/phi3"
     quantization_method = "AWQ"
     df = pd.read_csv("./optimization/dataset/processed_arxiv_test.csv")
@@ -128,7 +129,8 @@ if __name__ == '__main__':
         mode="lower_cased",
         language="en"
     )
-    document_list = [apply_normalizer(normalizer, document) for document in tqdm(df["doc"].tolist())]
+    document_list = [apply_normalizer(normalizer, document) for document in tqdm(df["doc"].tolist())] if flow == "init" else df["doc"].tolist()
+
     prompts = get_inputs(
         tokenizer=tokenizer,
         text_list=document_list
