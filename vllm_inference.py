@@ -155,7 +155,7 @@ if __name__ == '__main__':
         skip_special_tokens=True
     )
 
-    size = len(prompts) // 10
+    size = len(prompts) // 100
     chunked = [prompts[i:i + size] for i in range(0, len(prompts), size)]
 
     questions = []
