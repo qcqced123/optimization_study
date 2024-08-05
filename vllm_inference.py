@@ -118,7 +118,7 @@ def do_inference(llm: LLM, inputs: List[str], sampling_params: SamplingParams):
 if __name__ == '__main__':
     model_name = "./awq/phi3"
     quantization_method = "AWQ"
-    df = pd.read_csv("./optimization/dataset/test_3000.csv")
+    df = pd.read_csv("./optimization/dataset/processed_arxiv_test.csv")
 
     tokenizer = AutoTokenizer.from_pretrained(
         model_name,
