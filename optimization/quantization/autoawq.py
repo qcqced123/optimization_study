@@ -33,6 +33,13 @@ def get_tokenizer(model_name: str) -> AutoTokenizer:
     )
 
 
+def get_config(model_name: str) -> AutoConfig:
+    return AutoConfig.from_pretrained(
+        model_name,
+        trust_remote_code=True
+    )
+
+
 def get_awq_model(model_name: str) -> BaseAWQForCausalLM:
     return AutoAWQForCausalLM.from_pretrained(
         model_name,
