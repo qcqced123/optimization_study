@@ -37,7 +37,7 @@ def convert2onnx(name: str, config: AutoConfig) -> None:
         config=config,
         output="./saved/",
         task="text-generation-with-past",
-        opset=21,
+        #opset=21,
         device="cpu",
         dtype="bf16",
         optimize="O3",
