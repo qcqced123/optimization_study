@@ -425,3 +425,6 @@ tutorial/semantic_search/product_search_tutorial/myntra2.parquet
 !/dataset_class/downloading_dataset.ipynb
 /crawler/arxiv/download/
 *.csv
+*.onnx_data
+*.onnx
+/saved/
