@@ -32,15 +32,21 @@ def get_model(name: str, config: AutoConfig, bit_config: BitsAndBytesConfig = No
 
 
 def convert2onnx(name: str, config: AutoConfig) -> None:
+    """ function to export the pytorch model into ONNX Format with optimum
+
+    Args:
+        name (str): path for local hub or model name in huggingface remote model hub
+        config (AutoConfig): pretrain or fine-tune config file for exporting model
+    """
     main_export(
         model_name_or_path=name,
         config=config,
         output="./saved/",
         task="text-generation-with-past",
-        #opset=21,
-        device="cuda",
-        dtype="fp16",
-        optimize="O3",
+        # opset=21,
+        device="cpu",
+        dtype="fp32",
+        # optimize="O3",
         framework="pt",
         trust_remote_code=True,
     )
