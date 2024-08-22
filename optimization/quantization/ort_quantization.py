@@ -238,7 +238,40 @@ def rtn_4bit_quantize(
     return
 
 
-def qlora_4bit_quantize():
+def qlora_4bit_quantize(
+    model_name: str,
+    quant_type: str = "nf4",
+    block_size: int = 64,
+):
+    """ QLoRA quantization function, default target bit setting is Normal Float 4bit
+    This algorithm doesn't quantize the word embedding, language modeling head
+
+    if you want to quantize those modules, you must do manually
+    
+    Args:
+        model_name (str):
+        quant_type (str):
+        block_size (int):
+    """
+    output_path = "./saved/onnx/4bit_precision/RTN/phi3"
+    model_output = f"{output_path}/4bit_rtn_phi3.onnx"
+
+    ort_model = onnx.load(model_name)
+    ort_config = AutoConfig.from_pretrained(model_name, trust_remote_code=True)
+    ort_tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+
+    # quant_type = 0 => FP4, quant_type = 1 => NF4
+    # default block size is 64 in original paper
+    quant = matmul_bnb4_quantizer.MatMulBnb4Quantizer(
+        model=ort_model,
+        quant_type=1 if quant_type == "nf4" else 0,
+        block_size=block_size,
+    )
+
+    quant.process()
+    ort_config.save_pretrained(output_path)
+    ort_tokenizer.save_pretrained(output_path)
+    quant.model.save_model_to_file(os.path.join(model_output, model_name), use_external_data_format=True)
     return
 
 
