@@ -37,14 +37,14 @@ def get_ort_model(path: str) -> ORTModelForCausalLM:
     )
 
 
-def get_pipe(ort_model, ort_config, ort_tokenizer) -> pipeline:
+def get_pipe(ort_model: ORTModelForCausalLM, ort_config: AutoConfig, ort_tokenizer: AutoTokenizer) -> pipeline:
     return pipeline(
         task="text-generation-with-past",
         model=ort_model,
         config=ort_config,
         tokenizer=ort_tokenizer,
         device="cpu",
-        torch_dtype="torch.bfloat16",
+        # torch_dtype="torch.bfloat16",
         trust_remote_code=True,
     )
 

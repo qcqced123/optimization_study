@@ -1,3 +1,8 @@
+"""python module for expanding the LLMs max context size easily
+idea from longformer paper (Longformer: The Long-Document Transformer)
+we recommend the usage of this module for fine-tuning with longer sequence dataset than pretrained dataset
+"""
+
 import os
 import torch
 import torch.nn as nn

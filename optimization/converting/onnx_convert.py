@@ -1,9 +1,5 @@
-import torch
-import torch.nn as nn
-
 from optimum.exporters.onnx import main_export
-from transformers import pipeline, BitsAndBytesConfig
-from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 
 def get_config(name: str) -> AutoConfig:
