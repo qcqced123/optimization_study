@@ -31,7 +31,7 @@ def get_proj_module_names(model: nn.Module) -> Set:
     return proj_module_names
 
 
-def print_model_param_info(model: nn.Module):
+def print_model_param_info(model: nn. Module):
     """ print function the name, data types, require_grad info of the parameters
     for each module in the given pytorch model
 
