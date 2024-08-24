@@ -81,7 +81,7 @@ def freeze_partial_embedding_hook(
     value: Tensor,
     nums_of_original_embed: int
 ) -> None:
-    """ freeze the sub-part of embedding layer, register this function to backward hook
+    """ freeze the sub-part of embedding or language modeling layer's weight, register this function to backward hook
 
     Args:
         module (nn.Module): torch layer module of freezing
