@@ -75,7 +75,7 @@ def set_param(module: nn.Module, param_name: str, value: torch.Tensor) -> None:
 
 
 # number_of_old_tokens is the size of tokenizer before vocab extension.
-# For example, in case of Phi3.5-mini-instruct, number_of_old_tokens is 32010
+# For example, in case of Phi3.5-mini-instruct, number_of_old_tokens is 32011
 def freeze_partial_embedding_hook(
     module: nn.Module,
     value: Tensor,
@@ -89,6 +89,7 @@ def freeze_partial_embedding_hook(
         nums_of_original_embed (int): value of original (adding before new tokens) vocab size
 
     Example Result (freeze part: 0 ~ 2, fire part: 3 ~ 5):
+
         before module's weight value:
         tensor([[-9.5572e-01, -9.7061e-01, -8.1656e-01,  7.8150e-01],
                 [-1.1405e+00, -1.2238e+00,  3.1620e-01,  7.9152e-01],
@@ -108,6 +109,7 @@ def freeze_partial_embedding_hook(
     Reference:
         https://arxiv.org/pdf/2402.14714
         https://huggingface.co/yanolja/EEVE-Korean-Instruct-10.8B-v1.0
+        https://pytorch.org/docs/stable/generated/torch.Tensor.detach.html
         https://pytorch.org/docs/stable/generated/torch.Tensor.register_hook.html
     """
     # split the weight into two apart
@@ -115,7 +117,10 @@ def freeze_partial_embedding_hook(
     # detach() result does not affect the original tensor
     freeze_part, new_part = value[:nums_of_original_embed].detach(), value[nums_of_original_embed:]
 
-    # for making cnt_emb to leaf tensor
+    # for making the only "new_part" weight updated
+    # freeze_part and new_part do not have same "requires_grad" state
+    # so if we concatenate both weight naively in this case,
+    # this behavior will be caused the error (can't optimize the non-leaf tensor)
     with torch.no_grad():
         cnt_emb = torch.cat([freeze_part, new_part])
 
@@ -123,18 +128,54 @@ def freeze_partial_embedding_hook(
     return
 
 
-def set_train_layer() -> None:
+def set_train_layer(model: nn.Module, stage: int) -> None:
     """ set the trainable layer for training by EEVE method
+
+    behavior in each stage:
+        --------------------------------------------------------------
+        stage 1. train only added word embedding
+        stage 2. train only added language modeling head
+        stage 3. train only stage 1. and stage 2.
+        --------------------------------------------------------------
+        stage 4. train full language modeling head
+        stage 5. train added word embedding and full language modeling head
+        stage 6. train full layers
+        stage 7. train only decoder layer
+        --------------------------------------------------------------
+    Args:
+        model (nn.Module):
+        stage (int): value of current stage, this value will determine the current trainable layer
+
+    Reference:
+        https://arxiv.org/pdf/2402.14714
+        https://huggingface.co/yanolja/EEVE-Korean-10.8B-v1.0
     """
+    # define the stage to need partial training
+    # get the target modules of each stage
+    stage_dict = {
+        1: ["partial-embed_tokens"],
+        2: ["partial-lm_head"],
+        3: ["partial-embed_tokens", "partial-lm_head"],
+        4: ["full-lm_head"],
+        5: ["partial-embed_tokens", "full-lm_head"],
+        6: [""],
+        7: [""],
+    }
+    target_modules = stage_dict[stage]
+
+    # set the requires_grad options of each stage, modules
+    for target in target_modules:
+        state, target_name = target.split('-')
+
+        for name, module in model.named_modules():
+            for param_name, param in module.named_parameters():
+                if target_name in name and state == "partial":
+                    freeze_partial_embedding_hook(
+                        module=module,
+                        value=param,
+                        nums_of_original_embed=32011,
+                    )
+
+                elif target_name not in name:  # for not current train-stage layer
+                    param.requires_grad = False
     return
-
-
-"""
-for name, param in model.named_parameters():
-    if ("lm_head" in name or "embed_tokens" in name) and "original" not in name:
-        param.requires_grad = True
-        if "embed_tokens" in name:
-            param.register_hook(freeze_partial_embedding_hook)
-    else:
-        param.requires_grad = False
-"""

@@ -41,7 +41,8 @@ def print_model_param_info(model: nn. Module):
     for name, module in model.named_modules():
         for param_name, param in module.named_parameters(recurse=False):
             print(
-                f"Module: {name}, Parameter: {param_name}, DataType: {param.dtype}, is_trainable: {param.requires_grad}")
+                f"Module: {name}, Parameter: {param_name}, DataType: {param.dtype}, is_trainable: {param.requires_grad}"
+            )
 
 
 def convert_activation_func(model: nn.Module) -> None:
