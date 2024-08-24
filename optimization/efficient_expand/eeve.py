@@ -158,8 +158,8 @@ def set_train_layer(model: nn.Module, stage: int) -> None:
         3: ["partial-embed_tokens", "partial-lm_head"],
         4: ["full-lm_head"],
         5: ["partial-embed_tokens", "full-lm_head"],
-        6: [""],
-        7: [""],
+        6: ["full-embed_tokens", "full-layers", "full-lm_head"],
+        7: ["full-layers"],
     }
     target_modules = stage_dict[stage]
 
