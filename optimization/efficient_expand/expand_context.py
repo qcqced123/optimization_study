@@ -80,7 +80,7 @@ if __name__ == '__main__':
     # usage example code
     # filtering function for getting more good quality of data
     # use query encoder's pretrained tokenizer to calculate the sequence lengths
-    model_name = "intfloat/e5-base-v2"
+    model_name = "intfloat/e5-large-v2"
     config = AutoConfig.from_pretrained(
         pretrained_model_name_or_path=model_name,
         trust_remote_code=True
