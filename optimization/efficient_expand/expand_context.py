@@ -69,7 +69,17 @@ def expand_pos_emb(pos_emb: nn.Embedding, target_size: int) -> nn.Embedding:
 
 
 def save_model(model: nn.Module, config: AutoConfig, tokenizer: AutoTokenizer, to: str) -> None:
-    """ save the current state of model's config, tokenizer config """
+    """ save the current state of model's config, tokenizer config
+
+    Args:
+        model (nn.Module):
+        config (AutoConfig):
+        tokenizer (AutoTokenizer):
+        to (str): save path for model, config, tokenizer
+
+    Returns:
+        None
+    """
     print(f"Saving bf16 model to {to}...")
     model.save_pretrained(to)
     tokenizer.save_pretrained(to)
