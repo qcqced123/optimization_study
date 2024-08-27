@@ -153,9 +153,9 @@ def set_train_layer(model: nn.Module, stage: int) -> None:
         state, target_name = target.split('-')
 
         for name, module in model.named_modules():
-            for param_name, param in module.named_parameters():
+            for param_name, param in module.named_parameters(recurse=False):
                 if target_name in name and state == "partial":
-                    torch.register_hook(freeze_partial_embedding_hook)
+                    param.register_hook(freeze_partial_embedding_hook)
 
                 elif target_name not in name:  # for not current train-stage layer
                     param.requires_grad = False
