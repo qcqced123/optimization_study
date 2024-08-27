@@ -1,6 +1,5 @@
 """ Initialize vLLM’s engine for offline inference with the LLM class
 LLM class is the child of Huggingface AutoModel, so we can init this class same as Huggingface AutoModel usage
-
 """
 import pandas as pd
 
@@ -63,7 +62,6 @@ def initialize_llm(model_name: str, max_length: int, max_seq_len_to_capture: int
 
         tokenizer_revision: The specific tokenizer version to use. It can be a
             branch name, a tag name, or a commit id.
-
 
         seed: The seed to initialize the random number generator for sampling.
 

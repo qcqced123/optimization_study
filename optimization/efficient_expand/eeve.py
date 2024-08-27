@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 
 from torch import Tensor
-from typing import Union, Callable, List, Tuple, Set, Dict
+from typing import Union, List, Dict
 from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM, pipeline, TrainingArguments, Trainer
 os.environ["LRU_CACHE_CAPACITY"] = "4096"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -77,15 +77,13 @@ def set_param(module: nn.Module, param_name: str, value: torch.Tensor) -> None:
 # number_of_old_tokens is the size of tokenizer before vocab extension.
 # For example, in case of Phi3.5-mini-instruct, number_of_old_tokens is 32011
 def freeze_partial_embedding_hook(
-    module: nn.Module,
-    value: Tensor,
-    nums_of_original_embed: int
-) -> None:
+    grad: Tensor,
+    nums_of_original_embed: int = 32011
+) -> Tensor:
     """ freeze the sub-part of embedding or language modeling layer's weight, register this function to backward hook
 
     Args:
-        module (nn.Module): torch layer module of freezing
-        value (torch.Tensor): embedding or lm head weight tensor
+        grad (Tensor): current's layers backward gradient from loss
         nums_of_original_embed (int): value of original (adding before new tokens) vocab size
 
     Example Result (freeze part: 0 ~ 2, fire part: 3 ~ 5):
@@ -108,24 +106,11 @@ def freeze_partial_embedding_hook(
 
     Reference:
         https://arxiv.org/pdf/2402.14714
-        https://huggingface.co/yanolja/EEVE-Korean-Instruct-10.8B-v1.0
-        https://pytorch.org/docs/stable/generated/torch.Tensor.detach.html
+        https://huggingface.co/yanolja/EEVE-Korean-Instruct-2.8B-v1.0
         https://pytorch.org/docs/stable/generated/torch.Tensor.register_hook.html
     """
-    # split the weight into two apart
-    # detach() will copy the tensor and remove its computational graph
-    # detach() result does not affect the original tensor
-    freeze_part, new_part = value[:nums_of_original_embed].detach(), value[nums_of_original_embed:]
-
-    # for making the only "new_part" weight updated
-    # freeze_part and new_part do not have same "requires_grad" state
-    # so if we concatenate both weight naively in this case,
-    # this behavior will be caused the error (can't optimize the non-leaf tensor)
-    with torch.no_grad():
-        cnt_emb = torch.cat([freeze_part, new_part])
-
-    set_param(module, "weight", cnt_emb)
-    return
+    grad[:nums_of_original_embed] = 0
+    return grad
 
 
 def set_train_layer(model: nn.Module, stage: int) -> None:
@@ -170,11 +155,7 @@ def set_train_layer(model: nn.Module, stage: int) -> None:
         for name, module in model.named_modules():
             for param_name, param in module.named_parameters():
                 if target_name in name and state == "partial":
-                    freeze_partial_embedding_hook(
-                        module=module,
-                        value=param,
-                        nums_of_original_embed=32011,
-                    )
+                    torch.register_hook(freeze_partial_embedding_hook)
 
                 elif target_name not in name:  # for not current train-stage layer
                     param.requires_grad = False
