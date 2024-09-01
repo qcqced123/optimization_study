@@ -80,7 +80,7 @@ def save_model(model: nn.Module, config: AutoConfig, tokenizer: AutoTokenizer, t
     Returns:
         None
     """
-    print(f"Saving bf16 model to {to}...")
+    print(f"Saving {model.dtype} model to {to}...")
     model.save_pretrained(to)
     tokenizer.save_pretrained(to)
     config.save_pretrained(to)
