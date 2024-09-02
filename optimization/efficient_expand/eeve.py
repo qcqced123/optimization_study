@@ -141,11 +141,12 @@ def set_train_layer(model: nn.Module, stage: int) -> None:
         1: ["partial-embed_tokens"],
         2: ["partial-lm_head"],
         3: ["partial-embed_tokens", "partial-lm_head"],
-        4: ["full-lm_head"],
-        5: ["partial-embed_tokens", "full-lm_head"],
-        6: ["full-embed_tokens", "full-layers", "full-lm_head"],
-        7: ["full-layers"],
+        4: ["full-embed_tokens", "full-lm_head"],
+        5: ["full-embed_tokens", "full-lm_head"] + [f"full-layers.{i}" for i in range(0, 7, 1)] + [f"full-layers.{j}" for j in range(31, 24, -1)],
+        6: ["full-embed_tokens", "full-lm_head"] + [f"full-layers.{i}" for i in range(7, 14, 1)] + [f"full-layers.{j}" for j in range(24, 17, -1)],
+        7: ["full-embed_tokens", "full-lm_head"] + [f"full-layers.{i}" for i in range(14, 18, 1)],
     }
+    dequeue = []
     target_modules = stage_dict[stage]
 
     # set the requires_grad options of each stage, modules
@@ -154,9 +155,20 @@ def set_train_layer(model: nn.Module, stage: int) -> None:
 
         for name, module in model.named_modules():
             for param_name, param in module.named_parameters(recurse=False):
-                if target_name in name and state == "partial":
-                    param.register_hook(freeze_partial_embedding_hook)
+                if name not in dequeue:
 
-                elif target_name not in name:  # for not current train-stage layer
-                    param.requires_grad = False
+                    if target_name in name:
+
+                        if "layers" in target_name and target_name.split(".")[1] != name.split(".")[2]:
+                            continue
+
+                        param.requires_grad = True
+                        dequeue.append(name)
+
+                        if state == "partial":
+                            param.register_hook(freeze_partial_embedding_hook)
+
+                    elif target_name not in name:  # for not current train-stage layer
+                        param.requires_grad = False
     return
+
