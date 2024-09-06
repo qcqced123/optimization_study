@@ -75,7 +75,6 @@ Do not use bullet points or numerical indicators (e.g., "-", "1.", "2.", "Questi
 Separate the questions you want to create with newlines.
 Always end individual questions with a question mark.
 Context 4: {context}
-Question 4:
-"""
+Question 4: """
 
     return prompt
