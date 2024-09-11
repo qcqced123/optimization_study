@@ -66,4 +66,4 @@ if __name__ == '__main__':
     model = get_model(model_name, config)
 
     print_model_param_info(model)
-    # convert2onnx(model_name, config)
+    convert2onnx(model_name)
