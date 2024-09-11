@@ -109,7 +109,11 @@ def fp32_to_bf16(fp32_array: np.ndarray) -> np.ndarray:
     return bf16_array
 
 
-def bfloat16_quantize(model_name: str, target_weight_name: str = "model.embed_tokens.weight") -> None:
+def bfloat16_quantize(
+        model_name: str,
+        target_weight_name: str = "model.embed_tokens.weight",
+        bf16_model_path: str = ""
+) -> None:
     """ fp32 node-wise, initializer-wise(weight-wise) quantize to bf16 function
 
     bf16 is alias of bfloat16 or brain float16, made by Google 2019 for targeting Deep Learning
@@ -129,7 +133,7 @@ def bfloat16_quantize(model_name: str, target_weight_name: str = "model.embed_to
         model_name (str): path of local model hub
         target_weight_name (str): name of weight name to apply converting fp32 to bf16 for reducing model storage
                                   default value is model.embed_tokens.weight, indicating word embedding layers weight
-
+        bf16_model_path (str): path of local model hub to save the bf16 model
     Reference:
         https://onnx.ai/onnx/
         https://onnxruntime.ai/docs/
@@ -197,14 +201,14 @@ def bfloat16_quantize(model_name: str, target_weight_name: str = "model.embed_to
     new_nodes.insert(0, cast_node)
     onnx_model.graph.ClearField("node")
     onnx_model.graph.node.extend(new_nodes)
-
-    bf16_model_path = "embed_bf16_w4_model.onnx"
     onnx.save(onnx_model, bf16_model_path)
+
     return
 
 
 def rtn_4bit_quantize(
     model_name: str,
+    output_path: str,
     block_size: int,
     accuracy_level: int,
     algo_config: matmul_4bits_quantizer.RTNWeightOnlyQuantConfig
@@ -215,13 +219,12 @@ def rtn_4bit_quantize(
     if you want to quantize those modules, you must do manually
     Args:
         model_name (str):
+        output_path (str):
         block_size (int):
         accuracy_level (int):
         algo_config:
     """
-    output_path = "./saved/onnx/4bit_precision/RTN/phi3"
-    model_output = f"{output_path}/4bit_rtn_phi3.onnx"
-    ort_model = onnx.load(model_name)
+    ort_model = onnx.load(f"{model_name}model.onnx")
     ort_config = AutoConfig.from_pretrained(model_name, trust_remote_code=True)
     ort_tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 
@@ -232,14 +235,20 @@ def rtn_4bit_quantize(
         algo_config=algo_config
     )
     quant.process()
+
     ort_config.save_pretrained(output_path)
     ort_tokenizer.save_pretrained(output_path)
-    quant.model.save_model_to_file(os.path.join(model_output, model_name), use_external_data_format=True)
+
+    quant.model.save_model_to_file(
+        f"{output_path}W4A16_model.onnx",
+        use_external_data_format=True
+    )
     return
 
 
 def qlora_4bit_quantize(
     model_name: str,
+    output_path: str,
     quant_type: str = "nf4",
     block_size: int = 64,
 ):
@@ -253,10 +262,9 @@ def qlora_4bit_quantize(
         quant_type (str):
         block_size (int):
     """
-    output_path = "./saved/onnx/4bit_precision/RTN/phi3"
-    model_output = f"{output_path}/4bit_rtn_phi3.onnx"
+    ort_model = f"{model_name}model.onnx"
+    model_output = f"{output_path}W4A16_model.onnx"
 
-    ort_model = onnx.load(model_name)
     ort_config = AutoConfig.from_pretrained(model_name, trust_remote_code=True)
     ort_tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 
@@ -276,10 +284,12 @@ def qlora_4bit_quantize(
 
 
 if __name__ == '__main__':
-    model_name = "microsoft/Phi-3-mini-128k-instruct"
+    model_name = "./saved/onnx-stage5-eeve-phi3.5-mini-instruct/"
+    output_path = "./saved/W4A16-onnx-stage5-eeve-phi3.5-mini-instruct/"
     q_config = matmul_4bits_quantizer.RTNWeightOnlyQuantConfig()
     rtn_4bit_quantize(
         model_name=model_name,
+        output_path=output_path,
         block_size=128,
         accuracy_level=4,
         algo_config=q_config
