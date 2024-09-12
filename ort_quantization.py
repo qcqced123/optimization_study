@@ -246,8 +246,6 @@ def rtn_4bit_quantize(
     This algorithm doesn't quantize the word embedding, language modeling head
 
     if you want to quantize those modules, you must do manually
-
-
     Args:
         model_name (str):
         output_path (str):
@@ -318,25 +316,13 @@ def qlora_4bit_quantize(
 
 
 if __name__ == '__main__':
-    # model_name = "./saved/onnx-stage5-eeve-phi3.5-mini-instruct/"
-    # output_path = "./saved/W4A16-onnx-stage5-eeve-phi3.5-mini-instruct/"
-    # q_config = matmul_4bits_quantizer.RTNWeightOnlyQuantConfig()
-    # rtn_4bit_quantize(
-    #     model_name=model_name,
-    #     output_path=output_path,
-    #     block_size=128,
-    #     accuracy_level=4,
-    #     algo_config=q_config
-    # )
-    model_name = "./saved/W4A16-onnx-stage5-eeve-phi3.5-mini-instruct/W4A16_model.onnx"
-    output_path = "./saved/W4A16E16-onnx-stage5-eeve-phi3.5-mini-instruct/"
-    target_nodes = ["model.embed_tokens.weight", ]
-
-    model = onnx.load(model_name)
-    check_node(model)
-    # bfloat16_quantize(
-    #     model_name=model_name,
-    #     target_weight_name=target_nodes,
-    #     is_tied=False,
-    #     bf16_model_path=output_path
-    # )
+    model_name = "./saved/onnx-stage5-eeve-phi3.5-mini-instruct/"
+    output_path = "./saved/W4A16-onnx-stage5-eeve-phi3.5-mini-instruct/"
+    q_config = matmul_4bits_quantizer.RTNWeightOnlyQuantConfig()
+    rtn_4bit_quantize(
+        model_name=model_name,
+        output_path=output_path,
+        block_size=128,
+        accuracy_level=3,
+        algo_config=q_config
+    )
