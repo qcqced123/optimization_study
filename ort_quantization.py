@@ -316,7 +316,7 @@ def qlora_4bit_quantize(
 
 
 if __name__ == '__main__':
-    model_name = "./saved/onnx-stage5-eeve-phi3.5-mini-instruct/"
+    model_name = "./saved/bf16-onnx-stage5-eeve-phi3.5-mini-instruct/"
     output_path = "./saved/W4A16-onnx-stage5-eeve-phi3.5-mini-instruct/"
     q_config = matmul_4bits_quantizer.RTNWeightOnlyQuantConfig()
     rtn_4bit_quantize(

@@ -60,7 +60,7 @@ def do_inference(pipe: pipeline, inputs: str, sampling_params: Dict) -> str:
 
 
 if __name__ == '__main__':
-    model_path = "./saved/"
+    model_path = "./saved/W4A16-onnx-stage5-eeve-phi3.5-mini-instruct"
     ort_config = get_ort_config(model_path)
     ort_tokenizer = get_ort_tokenizer(model_path)
     ort_model = get_ort_model(model_path)

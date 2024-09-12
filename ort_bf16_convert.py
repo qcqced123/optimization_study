@@ -90,6 +90,12 @@ def convert_non_where_nodes_to_bfloat16(onnx_model: ModelProto) -> ModelProto:
         onnx_model (ModelProto): input onnx model
     """
     for node in onnx_model.graph.node:
+        if node.op_type == "Cast":
+            for attr in node.attribute:
+                if attr.name == "to" and attr.i == TensorProto.FLOAT:
+                    attr.i = TensorProto.BFLOAT16
+                    print(f"Updated Cast node {node.name} to cast to bfloat16.")
+
         if node.op_type != "Where":
             for idx in range(len(node.output)):
                 output_value_info = helper.make_tensor_value_info(node.output[idx], onnx.TensorProto.BFLOAT16, None)
