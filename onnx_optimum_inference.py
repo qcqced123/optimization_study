@@ -39,7 +39,7 @@ def get_ort_model(path: str) -> ORTModelForCausalLM:
 
 def get_pipe(ort_model: ORTModelForCausalLM, ort_config: AutoConfig, ort_tokenizer: AutoTokenizer) -> pipeline:
     return pipeline(
-        task="text-generation-with-past",
+        task="text-generation",
         model=ort_model,
         config=ort_config,
         tokenizer=ort_tokenizer,
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         "top_p": 0.90,
     }
 
-    prompts = "Hello, what is your name? How was your day?"
+    prompts = "Hello, what is your name?"
     outputs = do_inference(pipe, prompts, sampling_params)
     print(outputs)
 

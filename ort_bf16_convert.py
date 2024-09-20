@@ -5,7 +5,7 @@ import onnx
 import numpy as np
 
 from tqdm.auto import tqdm
-from onnx import helper, TensorProto, ModelProto
+from onnx import helper, NodeProto, TensorProto, ModelProto
 
 
 def check_initializer(onnx_model: ModelProto) -> None:
@@ -42,7 +42,49 @@ def fp32_to_bf16(fp32_array: np.ndarray) -> np.ndarray:
     return bf16_array
 
 
-def convert_tensor_to_bfloat16(tensor) -> None:
+def is_float32_output(node: NodeProto, model: ModelProto) -> bool:
+    """ validation function if the node's output type is float32
+
+    Args:
+        node (NodeProto):
+        model (ModelProto):
+    """
+    for output in node.output:
+        for value_info in model.graph.value_info:
+            if value_info.name == output and value_info.type.tensor_type.elem_type == onnx.TensorProto.FLOAT:
+                return True
+    return False
+
+
+def is_cast_to_float32(node: NodeProto) -> bool:
+    """ validation function if the CAST node is casting to float32
+
+    Args:
+    """
+    if node.op_type == "Cast":
+        for attr in node.attribute:
+            if attr.name == "to" and attr.i == onnx.TensorProto.FLOAT:
+                return True
+    return False
+
+
+def convert_cast_nodes_to_bfloat16(onnx_model: ModelProto) -> ModelProto:
+    """ convert function if current cast node setting for FP32, this function change to setting for BF16
+
+    Args:
+        onnx_model (ModelProto):
+    """
+    for node in onnx_model.graph.node:
+        if node.op_type == "Cast":
+            for attr in node.attribute:
+                if attr.name == "to" and attr.i == onnx.TensorProto.FLOAT:
+                    attr.i = onnx.TensorProto.BFLOAT16  # Convert to BFLOAT16
+                    print(f"Converted Cast node {node.name} to BFLOAT16.")
+
+    return onnx_model
+
+
+def convert_tensor_to_bfloat16(tensor: TensorProto) -> None:
     """ convert function for ONNX tensor from float32 to bfloat16
 
     Args:
@@ -69,6 +111,15 @@ def convert_tensor_to_bfloat16(tensor) -> None:
         raise ValueError("The tensor has no float_data or raw_data field to convert.")
 
 
+def convert_node_inputs_to_bfloat16(node: NodeProto, onnx_model: ModelProto) -> None:
+    """ convert function for FP32 input to bfloat16
+    """
+    for input_name in node.input:
+        for initializer in onnx_model.graph.initializer:
+            if initializer.name == input_name and initializer.data_type == onnx.TensorProto.FLOAT:
+                convert_tensor_to_bfloat16(initializer)
+
+
 def convert_model_weights_to_bfloat16(onnx_model: ModelProto) -> ModelProto:
     """ convert function for weights in the ONNX model to bfloat16
 
@@ -90,17 +141,26 @@ def convert_non_where_nodes_to_bfloat16(onnx_model: ModelProto) -> ModelProto:
         onnx_model (ModelProto): input onnx model
     """
     for node in onnx_model.graph.node:
-        if node.op_type == "Cast":
-            for attr in node.attribute:
-                if attr.name == "to" and attr.i == TensorProto.FLOAT:
-                    attr.i = TensorProto.BFLOAT16
-                    print(f"Updated Cast node {node.name} to cast to bfloat16.")
+        if node.op_type != "Where" and is_float32_output(node, onnx_model):
+            convert_node_inputs_to_bfloat16(node, onnx_model)
 
-        if node.op_type != "Where":
             for idx in range(len(node.output)):
-                output_value_info = helper.make_tensor_value_info(node.output[idx], onnx.TensorProto.BFLOAT16, None)
-                onnx_model.graph.value_info.extend([output_value_info])
+                output_name = node.output[idx]
+                output_value_info = next(
+                    (v for v in onnx_model.graph.value_info if v.name == output_name),
+                    None
+                )
+                if output_value_info:
+                    if output_value_info.type.tensor_type.elem_type == onnx.TensorProto.FLOAT:
+                        output_value_info.type.tensor_type.elem_type = onnx.TensorProto.BFLOAT16
+        return onnx_model
 
+
+def convert_add_mul_inputs_to_bfloat16(onnx_model):
+    """Convert Add and Mul nodes' inputs to bfloat16 to maintain consistency."""
+    for node in onnx_model.graph.node:
+        if node.op_type in ["Add", "Mul"]:
+            convert_node_inputs_to_bfloat16(node, onnx_model)
     return onnx_model
 
 
@@ -114,6 +174,10 @@ def convert_model_except_where_to_bfloat16(model_path: str, output_path: str) ->
     onnx_model = onnx.load(model_path)
     onnx_model = convert_model_weights_to_bfloat16(onnx_model)
     onnx_model = convert_non_where_nodes_to_bfloat16(onnx_model)
+    onnx_model = convert_cast_nodes_to_bfloat16(onnx_model)
+
+    onnx_model = convert_add_mul_inputs_to_bfloat16(onnx_model)
+
 
     onnx.save(
         onnx_model,
