@@ -1,3 +1,7 @@
+"""python module for expanding the vocab of pretrained LLM, training partial
+original idea from EEVE: Efficient and Effective vocabulary Expansion Towards Multilingual LLMs
+"""
+
 import os
 import re
 
@@ -115,6 +119,7 @@ def freeze_partial_embedding_hook(
 
 def set_train_layer(model: nn.Module, stage: int) -> None:
     """ set the trainable layer for training by EEVE method
+    current state of implementation in this function is optimized for phi3.5-mini-instruct
 
     behavior in each stage:
         --------------------------------------------------------------
@@ -165,6 +170,7 @@ def set_train_layer(model: nn.Module, stage: int) -> None:
                         param.requires_grad = True
                         dequeue.append(name)
 
+                        # for backward gradient pass
                         if state == "partial":
                             param.register_hook(freeze_partial_embedding_hook)
 
