@@ -62,7 +62,7 @@ def expand_pos_emb(pos_emb: nn.Embedding, target_size: int) -> nn.Embedding:
         )
 
     new_emb = nn.Embedding(target_size, pos_emb.embedding_dim, device=pos_emb.weight.device)
-    num_repeats = (target_size + pos_emb.num_embeddings - 1) // pos_emb.num_embeddings  # 올림 처리
+    num_repeats = (target_size + pos_emb.num_embeddings - 1) // pos_emb.num_embeddings  # floor
     expanded_weights = pos_emb.weight.clone().detach().repeat(num_repeats, 1)[:target_size, :]
     set_param(new_emb, "weight", nn.Parameter(expanded_weights))
     return new_emb
