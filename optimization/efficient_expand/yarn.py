@@ -78,5 +78,9 @@ class YaRNScaledRotaryEmbedding(nn.Module):
         out.detach_()
         return out * self.temperature  # ASAP, check this logic
 
-    def forward(self):
-        return
+    @torch.no_grad()
+    def forward(self, seq_len: int, past_key_values_length: int = 0) -> Tensor:
+        positions = torch.arange(
+            past_key_values_length, past_key_values_length + seq_len, dtype=torch.long, device=self.weight.device
+        )
+        return super().forward(positions)  # super() is nn.Embedding(), super will return the embedding weight
