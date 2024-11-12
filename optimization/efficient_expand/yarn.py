@@ -30,6 +30,7 @@ class YaRNScaledRotaryEmbedding(nn.Module):
         https://arxiv.org/abs/2309.00071  # original paper
         https://simpling.tistory.com/56  # well explain about neural tangent kernel
         https://pytorch.org/tutorials/intermediate/neural_tangent_kernels.html  # NTK in pytorch
+        https://github.com/microsoft/LongRoPE/blob/main/rope/yarn.py
     """
     def __init__(self, extended_length: int, pretrained_length: int, dim_head: int, alpha: int = 1, beta: int = 32) -> None:
         super().__init__(extended_length, dim_head)
@@ -42,10 +43,12 @@ class YaRNScaledRotaryEmbedding(nn.Module):
         self.weight = self._init_weight(self.weight)  # self.weight is from parent class "nn.Embedding"
 
     def ramp_func(self, d: int):
-        """ class method for calculating the wavelength of d-th hidden state
+        """ class method for calculating the wavelength of d-th hidden state, ramp value
+        ramp value is used to determine the interpolation method of dimension of hidden state
+
         Args:
             d (int): number of current hidden state
-
+x
         Return: ramp value, γ(r) (in official paper expression)
         """
         r_d = self.pretrained_length / np.power((2 * pi * 10000), abs(2 * d / self.dim_head))

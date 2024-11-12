@@ -8,14 +8,6 @@ from typing import Tuple, Optional
 from einops.layers.torch import Rearrange
 
 
-class YaRNScaledRotaryEmbedding(nn.Module):
-    """
-    reference:
-        https://github.com/microsoft/LongRoPE/blob/main/rope/yarn.py
-    """
-    pass
-
-
 class LongRoPEScaledRotaryEmbedding(nn.Embedding):
     """
     reference:
