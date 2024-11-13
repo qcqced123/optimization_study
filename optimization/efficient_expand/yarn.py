@@ -8,7 +8,7 @@ from math import log, pi
 from torch import Tensor
 
 
-class YaRNScaledRotaryEmbedding(nn.Module):
+class YaRNScaledRotaryEmbedding(nn.Embedding):
     """ module of YaRN (Yet another RoPE Extend method)
 
     main idea:
@@ -20,7 +20,7 @@ class YaRNScaledRotaryEmbedding(nn.Module):
         - h(θ): acts on the entries of the diagonal matrix θ, uniformly by diag(h(θ1), · · · , h(θ|D|/2))
 
         [rescaling softmax temperature]
-
+ 
     Args:
         extended_length (int): target value of extended context window size
         pretrained_length (int): value of pretrained model's context window size
@@ -31,6 +31,7 @@ class YaRNScaledRotaryEmbedding(nn.Module):
         https://simpling.tistory.com/56  # well explain about neural tangent kernel
         https://pytorch.org/tutorials/intermediate/neural_tangent_kernels.html  # NTK in pytorch
         https://github.com/microsoft/LongRoPE/blob/main/rope/yarn.py
+        https://github.com/microsoft/LongRoPE/blob/main/rope/longrope.py#L67
     """
     def __init__(self, extended_length: int, pretrained_length: int, dim_head: int, alpha: int = 1, beta: int = 32) -> None:
         super().__init__(extended_length, dim_head)
@@ -48,7 +49,7 @@ class YaRNScaledRotaryEmbedding(nn.Module):
 
         Args:
             d (int): number of current hidden state
-x
+
         Return: ramp value, γ(r) (in official paper expression)
         """
         r_d = self.pretrained_length / np.power((2 * pi * 10000), abs(2 * d / self.dim_head))
