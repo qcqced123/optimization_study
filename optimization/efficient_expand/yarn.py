@@ -84,6 +84,9 @@ x
     @torch.no_grad()
     def forward(self, seq_len: int, past_key_values_length: int = 0) -> Tensor:
         positions = torch.arange(
-            past_key_values_length, past_key_values_length + seq_len, dtype=torch.long, device=self.weight.device
+            past_key_values_length,
+            past_key_values_length + seq_len,
+            dtype=torch.long,
+            device=self.weight.device
         )
         return super().forward(positions)  # super() is nn.Embedding(), super will return the embedding weight
