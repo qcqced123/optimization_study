@@ -43,7 +43,7 @@ class PositionalInterpolation(nn.Embedding):
         """
         n_pos, dim = out.shape
         position_enc = np.array(
-            [[pos * self.scaler / np.power(10000, 2 * (j // 2) / dim) for j in range(dim)] for pos in range(n_pos)]
+            [[(pos * self.scaler) / np.power(10000, 2 * (j // 2) / dim) for j in range(dim)] for pos in range(n_pos)]
         )
         out.requires_grad = False
         sentinel = dim // 2 if dim % 2 == 0 else (dim // 2) + 1

@@ -20,7 +20,7 @@ class YaRNScaledRotaryEmbedding(nn.Embedding):
         - h(θ): acts on the entries of the diagonal matrix θ, uniformly by diag(h(θ1), · · · , h(θ|D|/2))
 
         [rescaling softmax temperature]
- 
+
     Args:
         extended_length (int): target value of extended context window size
         pretrained_length (int): value of pretrained model's context window size
@@ -61,7 +61,7 @@ class YaRNScaledRotaryEmbedding(nn.Embedding):
             ramp = (r_d - self.alpha) / (self.beta - self.alpha)
         return ramp
 
-    def _init_weight(self, out: nn.Parameter) -> Tensor:
+    def _init_weight(self, out: nn.Parameter) -> nn.Parameter:
         # make the position_encoding array of YaRN
         n_pos, dim = out.shape
         position_enc = []
@@ -80,7 +80,7 @@ class YaRNScaledRotaryEmbedding(nn.Embedding):
         out[:, 0:sentinel] = torch.FloatTensor(np.sin(position_enc[:, 0::2]))  # half of hidden state
         out[:, sentinel:] = torch.FloatTensor(np.cos(position_enc[:, 1::2]))
         out.detach_()
-        return out * self.temperature  # ASAP, check this logic
+        return out  # nn.Embedding's weight module must be nn.Parameter, not allowed Tensor
 
     @torch.no_grad()
     def forward(self, seq_len: int, past_key_values_length: int = 0) -> Tensor:
@@ -90,4 +90,5 @@ class YaRNScaledRotaryEmbedding(nn.Embedding):
             dtype=torch.long,
             device=self.weight.device
         )
-        return super().forward(positions)  # super() is nn.Embedding(), super will return the embedding weight
+        pos_embeddings = super().forward(positions)  # super() is nn.Embedding(), super will return the embedding weight
+        return pos_embeddings * self.temperature
