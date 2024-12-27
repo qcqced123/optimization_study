@@ -34,8 +34,8 @@ def init_vocab(seq: str) -> Dict:
     """
     vocab = defaultdict(int)
     for s in seq.split():
-        chars = " ".join(list(s))
-        vocab[chars] += 1
+        for char in list(s):
+            vocab[char] += 1
 
     return vocab
 
@@ -61,7 +61,7 @@ def add_vocab(best_pair: Tuple, vocab: Dict):
         vocab (Dict):
     """
     new_vocab = defaultdict(int)
-    bi_gram = re.escape(" ".join(best_pair))
+    bi_gram = re.escape("".join(best_pair))
     p = re.compile(r'(?<!\S)' + bi_gram + r'(?!\S)')
     for word in vocab:
         word_out = p.sub("".join(best_pair), word)
@@ -73,9 +73,10 @@ def add_vocab(best_pair: Tuple, vocab: Dict):
 if __name__ == '__main__':
     text = "cost best menu men men born porn porn korean korean korea enjoy enjoying enjoying yarning cost cost cost men man men"
     vocab = init_vocab(text)
-    vocab_size = 25
+    vocab_size = 10
     for i in range(vocab_size):
         pairs = get_char_stats(vocab)
+        print(pairs)
         best = max(pairs, key=pairs.get)
         vocab = add_vocab(best, vocab)
 
