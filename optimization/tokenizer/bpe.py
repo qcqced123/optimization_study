@@ -2,10 +2,12 @@
 
 original source from:
     - https://arxiv.org/pdf/1508.07909
+    - https://huggingface.co/learn/nlp-course/chapter6/5?fw=pt
 """
 import re
 from collections import defaultdict
 from typing import List, Dict, Tuple
+from transformers import AutoTokenizer
 
 
 # def get_stats(vocab):
@@ -71,17 +73,42 @@ def add_vocab(best_pair: Tuple, vocab: Dict):
 
 
 if __name__ == '__main__':
-    text = "cost best menu men men born porn porn korean korean korea enjoy enjoying enjoying yarning cost cost cost men man men"
-    vocab = init_vocab(text)
-    vocab_size = 10
-    for i in range(vocab_size):
-        pairs = get_char_stats(vocab)
-        print(pairs)
-        best = max(pairs, key=pairs.get)
-        vocab = add_vocab(best, vocab)
+    corpus = [
+        "This is the Hugging Face Course.",
+        "This chapter is about tokenization.",
+        "This section shows several tokenizer algorithms.",
+        "Hopefully, you will be able to understand how they are trained and generate tokens.",
+    ]
+    word_freqs = defaultdict(int)
 
-    for k,v in vocab.items():
-        print(f"{k}: {v}", end="\n")
+    tokenizer = AutoTokenizer.from_pretrained("gpt2")
+    for text in corpus:
+        words_with_offsets = tokenizer.backend_tokenizer.pre_tokenizer.pre_tokenize_str(text)
+        new_words = [word for word, offset in words_with_offsets]
+        for word in new_words:
+            word_freqs[word] += 1
+
+    alphabet = []
+
+    for word in word_freqs.keys():
+        for letter in word:
+            if letter not in alphabet:
+                alphabet.append(letter)
+    alphabet.sort()
+
+    vocab = ["<|endoftext|>"] + alphabet.copy()
+    splits = {word: [c for c in word] for word in word_freqs.keys()}
+    print(splits)
+    # vocab = init_vocab(text)
+    # vocab_size = 10
+    # for i in range(vocab_size):
+    #     pairs = get_char_stats(vocab)
+    #     print(pairs)
+    #     best = max(pairs, key=pairs.get)
+    #     vocab = add_vocab(best, vocab)
+    #
+    # for k,v in vocab.items():
+    #     print(f"{k}: {v}", end="\n")
 
     # vocab = {'l o w </w>': 5, 'l o w e r </w>': 2,
     #          'n e w e s t </w>': 6, 'w i d e s t </w>': 3}
