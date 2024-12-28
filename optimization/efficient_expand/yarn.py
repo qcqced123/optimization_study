@@ -16,8 +16,8 @@ class YaRNScaledRotaryEmbedding(nn.Embedding):
         [ntk-by-parts]
         - f′(x, m, θ) = f(x, g(m), h(θ))
         - f: original RoPE Function
-        - g(m): map between real numbers
-        - h(θ): acts on the entries of the diagonal matrix θ, uniformly by diag(h(θ1), · · · , h(θ|D|/2))
+        - g(m): mapbetween real numbers
+        - h(θ): acts  on the entries of the diagonal matrix θ, uniformly by diag(h(θ1), · · · , h(θ|D|/2))
 
         [rescaling softmax temperature]
 
