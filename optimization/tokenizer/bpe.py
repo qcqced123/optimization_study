@@ -97,10 +97,12 @@ def merge_pair(s: str, e: str, word_freq: Dict, splits: Dict) -> Dict:
         # pass if current word is single character
         if len(split) == 1:
             continue
+
         i = 0
         while i < len(split)-1:
             if split[i] == s and split[i+1] == e: split = split[:i] + [s+e] + split[i+2:]  # merge algorithm
             else: i += 1
+
         splits[word] = split  # change current state of word to merged one
 
     return splits
@@ -113,7 +115,6 @@ def tokenize(new_seq: str, merges: Dict) -> List[str]:
     """
     # need to initialize the global space
     pre_tokenizer = AutoTokenizer.from_pretrained("gpt2").backend_tokenizer.pre_tokenizer.pre_tokenize_str
-
 
     # logic for pre-tokenizing to new context
     pre_sequence = [word for word, _ in pre_tokenizer(new_seq)]
@@ -154,7 +155,7 @@ if __name__ == '__main__':
         merges[best] = new_token
         vocab.append(new_token)
 
-    # logic for tokenizing the new context, text  sequence
+    # logic for tokenizing the new context, text sequence
     inference_seq = [
         "This is not a token."
     ]
