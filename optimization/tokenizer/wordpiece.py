@@ -8,7 +8,6 @@ original source from:
     - https://huggingface.co/learn/nlp-course/chapter6/6
     - https://www.kaggle.com/code/binfeng2021/what-is-bbpe-tokenizer-behind-llms
 """
-import re
 from bpe import pretokenize
 from collections import defaultdict
 from typing import List, Dict, Tuple
