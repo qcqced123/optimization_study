@@ -38,14 +38,14 @@ def merge_vocab(pair, v_in: Dict):
     return v_out
 
 
-def pretokenize(corpus: List[str]) -> Dict:
+def pretokenize(corpus: List[str], model_name: str) -> Dict:
     """ func for applying the pre-tokenizing to input data, corpus
     Args:
         corpus (List[str]):
     """
     # for using the gpt2's pre-tokenizer algorithm, ASAP convert this logic into own implementations
     word_freq = defaultdict(int)
-    pre_tokenizer = AutoTokenizer.from_pretrained("gpt2").backend_tokenizer.pre_tokenizer.pre_tokenize_str
+    pre_tokenizer = AutoTokenizer.from_pretrained(model_name).backend_tokenizer.pre_tokenizer.pre_tokenize_str
     for text in corpus:
         words_with_offsets = pre_tokenizer(text)
         new_words = [word for word, offset in words_with_offsets]
@@ -90,8 +90,6 @@ def get_freq_stats(freq_dict: Dict, splits: Dict) -> Dict:
 
 
 def merge_pair(s: str, e: str, word_freq: Dict, splits: Dict) -> Dict:
-    """
-    """
     for word in word_freq:
         split = splits[word]
         # pass if current word is single character
@@ -108,13 +106,13 @@ def merge_pair(s: str, e: str, word_freq: Dict, splits: Dict) -> Dict:
     return splits
 
 
-def tokenize(new_seq: str, merges: Dict) -> List[str]:
+def tokenize(model_name: str, new_seq: str, merges: Dict) -> List[str]:
     """ tokenize the new context sequence by using the pretrained tokenizer, vocab
     Args:
         new_seq (str]): new single context, text sequences
     """
     # need to initialize the global space
-    pre_tokenizer = AutoTokenizer.from_pretrained("gpt2").backend_tokenizer.pre_tokenizer.pre_tokenize_str
+    pre_tokenizer = AutoTokenizer.from_pretrained(model_name).backend_tokenizer.pre_tokenizer.pre_tokenize_str
 
     # logic for pre-tokenizing to new context
     pre_sequence = [word for word, _ in pre_tokenizer(new_seq)]
@@ -144,7 +142,9 @@ if __name__ == '__main__':
     ]
     merges = {}
     vocab_size = 50
-    word_freq = pretokenize(corpus)
+    tokenizer_type = "bpe"
+    model_name = "gpt2" if tokenizer_type == "bpe" else "bert-base-cased"
+    word_freq = pretokenize(corpus, model_name)
     vocab = initialize_vocab(word_freq)
     splits = {word: [c for c in word] for word in word_freq.keys()}
     while len(vocab) < vocab_size:
@@ -159,6 +159,6 @@ if __name__ == '__main__':
     inference_seq = [
         "This is not a token."
     ]
-    result = [tokenize(seq, merges) for seq in inference_seq]
+    result = [tokenize(model_name, seq, merges) for seq in inference_seq]
     print(result)
 
