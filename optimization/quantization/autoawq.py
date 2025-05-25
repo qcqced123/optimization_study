@@ -51,7 +51,7 @@ def get_awq_model(model_name: str) -> BaseAWQForCausalLM:
 def get_bit_config() -> Dict:
     return {
         "zero_point": True,
-        "q_group_size": 128,
+        "q_group_size": 256,
         "w_bit": 4,
         "version": "GEMM"
     }
@@ -84,7 +84,7 @@ def save_awq_module(model: nn.Module, tokenizer: AutoTokenizer, path: str) -> No
 
 if __name__ == '__main__':
     device = get_device()
-    model_name = "microsoft/Phi-3.5-mini-instruct"
+    model_name = "Qwen/Qwen3-14B"
 
     tokenizer = get_tokenizer(model_name=model_name)
     model = get_awq_model(model_name)
@@ -104,6 +104,6 @@ if __name__ == '__main__':
     save_awq_module(
         model=model,
         tokenizer=tokenizer,
-        path="../awq/phi3.5"
+        path="../awq/qwen3_14b"
     )
 
